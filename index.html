@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sentiment Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 { text-align: center; color: #333; }
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      margin-bottom: 12px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto 20px;
+    }
+    button:hover { background: #45a049; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    #result {
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      min-height: 80px;
+      text-align: center;
+      font-size: 1.4rem;
+      display: none;
+    }
+    .positive { color: #2e7d32; }
+    .negative { color: #c62828; }
+    .mixed    { color: #f57c00; }
+    .emoji    { font-size: 3.5rem; margin: 10px 0; }
+    #error    { color: #d32f2f; margin-top: 10px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <h1>Sentiment Analyzer 😄</h1>
+
+  <textarea id="comment" placeholder="Write your comment here... (e.g. I love you, this is bad, it's okay...)"></textarea>
+
+  <button id="btnAnalyze">Analyze Sentiment</button>
+
+  <div id="result">
+    <div class="emoji" id="emoji"></div>
+    <div id="sentimentText"></div>
+    <div id="original" style="margin-top:15px; font-size:0.95rem; color:#555;"></div>
+  </div>
+
+  <div id="error"></div>
+
+  <script>
+    const btn = document.getElementById('btnAnalyze');
+    const textarea = document.getElementById('comment');
+    const resultDiv = document.getElementById('result');
+    const emojiDiv = document.getElementById('emoji');
+    const textDiv = document.getElementById('sentimentText');
+    const originalDiv = document.getElementById('original');
+    const errorDiv = document.getElementById('error');
+
+    btn.addEventListener('click', async () => {
+      const text = textarea.value.trim();
+
+      if (!text) {
+        errorDiv.textContent = 'Please enter a comment!';
+        return;
+      }
+
+      errorDiv.textContent = '';
+      btn.disabled = true;
+      btn.textContent = 'Analyzing...';
+      resultDiv.style.display = 'none';
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/sentiment/analyze', {  // adjust path if needed (e.g. /analyze if not in api.php)
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({ comment: text })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.status) {
+          throw new Error(data.message || 'Analysis failed');
+        }
+
+        const sentiment = data.sentiment.toLowerCase();
+        const emoji = data.emoji;
+
+        emojiDiv.textContent = emoji;
+        textDiv.textContent = sentiment.toUpperCase();
+        textDiv.className = sentiment;  // color apply
+
+        originalDiv.textContent = `“${text}”`;
+
+        resultDiv.style.display = 'block';
+
+      } catch (err) {
+        errorDiv.textContent = 'Error: ' + err.message;
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Analyze Sentiment';
+      }
+    });
+  </script>
+
+</body>
+</html>
