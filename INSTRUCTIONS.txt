@@ -1,0 +1,76 @@
+TriSent-ML – Setup & Run Instructions
+====================================
+
+This project is a classical machine-learning based sentiment analysis system
+using TF-IDF and Logistic Regression, exposed via a FastAPI API.
+
+--------------------------------------------------
+1. Requirements
+--------------------------------------------------
+- Python 3.9 or above
+- pip (Python package manager)
+
+--------------------------------------------------
+2. Install Dependencies
+--------------------------------------------------
+
+Run the following command from the project root:
+
+pip install -r requirements.txt
+
+--------------------------------------------------
+5. Run the API Server
+--------------------------------------------------
+
+IMPORTANT:
+Always run the API server from the PROJECT ROOT directory.
+
+Project root example:
+E:\TriSent
+
+Do NOT run uvicorn from inside the api/ folder.
+
+--------------------------------------------------
+
+Command to start FastAPI server:
+
+python -m uvicorn api.ml_api:app --host 127.0.0.1 --port 8001
+
+--------------------------------------------------
+
+Explanation:
+- api        → folder name (Python package)
+- ml_api     → API file (ml_api.py)
+- app        → FastAPI instance inside ml_api.py
+
+--------------------------------------------------
+
+If the server starts successfully, you will see:
+
+INFO:     Uvicorn running on http://127.0.0.1:8001
+
+--------------------------------------------------
+
+Open API documentation in browser:
+
+http://127.0.0.1:8001/docs
+
+--------------------------------------------------
+6. Test the API
+--------------------------------------------------
+
+Open browser and visit:
+http://127.0.0.1:8000/docs
+
+Use the Swagger UI to test sentiment prediction endpoints.
+
+--------------------------------------------------
+7. Notes
+--------------------------------------------------
+- This is a statistical ML model, not a generative AI.
+- Predictions depend on training data quality.
+- Profanity and slang may require rule-based handling.
+
+--------------------------------------------------
+End of Instructions
+--------------------------------------------------
